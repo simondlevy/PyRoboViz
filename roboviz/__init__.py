@@ -21,6 +21,7 @@ GNU General Public License for more details.
 # Essential imports
 import matplotlib.pyplot as plt
 import matplotlib.cm as colormap
+import matplotlib.lines as mlines
 import numpy as np
 
 # This helps with Raspberry Pi
@@ -112,11 +113,9 @@ class Visualizer(object):
         self._add_vehicle(x_mm, y_mm, theta_deg)
 
         # Show trajectory if indicated
-        s = self.map_scale_mm_per_pixel
-        currpos = x_mm/s,y_mm/s
+        currpos = self._mm2pix(x_mm,y_mm)
         if self.showtraj and not self.prevpos is None:
-            print(self.prevpos, currpos)
-            self.prevpos = (x_mm,y_mm)
+            self.ax.add_line(mlines.Line2D((self.prevpos[0],currpos[0]), (self.prevpos[1],currpos[1])))
         self.prevpos = currpos
 
     def refresh(self):                   
@@ -136,6 +135,12 @@ class Visualizer(object):
             return False
 
         return True
+
+    def _mm2pix(self, x_mm, y_mm):
+
+        s = self.map_scale_mm_per_pixel
+
+        return x_mm/s, y_mm/s
     
     def _add_vehicle(self, x_mm, y_mm, theta_deg):
 
@@ -144,7 +149,7 @@ class Visualizer(object):
 
         s = self.map_scale_mm_per_pixel
 
-        self.vehicle=self.ax.arrow(x_mm/s, y_mm/s, 
+        self.vehicle=self.ax.arrow(*self._mm2pix(x_mm, y_mm), 
                 dx, dy, head_width=Visualizer.ROBOT_WIDTH_MM/s, head_length=Visualizer.ROBOT_HEIGHT_MM/s, fc='r', ec='r')
 
     def _rotate(x, y, r, deg):
