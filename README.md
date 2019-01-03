@@ -1,1 +1,1 @@
-<img src="roboviz.gif">
+<img src="roboviz.gif" width=400 align="center">
