@@ -54,7 +54,5 @@ while True:
     pose[1] += s * np.sin(theta)
     pose[2] += 10 * np.random.randn()
 
-    print('%+3.3f %+3.3f %+3.3f' % tuple(pose))
-
     # Hang a bit before next frame
     sleep(DT_SEC)
