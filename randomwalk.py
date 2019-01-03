@@ -31,7 +31,7 @@ SPEED_MPS       = 10
 DT_SEC          = .01
 
 # Create a Visualizer object
-viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS*1000/MAP_SIZE_PIXELS, 'Random Walk')
+viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS*1000/MAP_SIZE_PIXELS, 'Random Walk', True)
 
 # Start in the center of the map
 center_mm = MAP_SIZE_METERS * 1000 / 2

@@ -22,7 +22,6 @@ GNU General Public License for more details.
 import matplotlib.pyplot as plt
 import matplotlib.cm as colormap
 import numpy as np
-import time
 
 # This helps with Raspberry Pi
 import matplotlib
@@ -34,7 +33,7 @@ class Visualizer(object):
     ROBOT_HEIGHT_MM = 500
     ROBOT_WIDTH_MM  = 300
 
-    def __init__(self, map_size_pixels, map_scale_mm_per_pixel, title):
+    def __init__(self, map_size_pixels, map_scale_mm_per_pixel, title='RoboViz', trajectory=False):
     
         # Store constants for update
         self.map_size_pixels = map_size_pixels
@@ -80,12 +79,16 @@ class Visualizer(object):
         map_center_mm = map_scale_mm_per_pixel * map_size_pixels
         self._add_vehicle(map_center_mm,map_center_mm,0)
 
+        # Store previous position for trjectory
+        self.prevpos = None
+        self.showtraj = trajectory
+
     def displayMap(self, mapbytes):
 
         mapimg = np.reshape(np.frombuffer(mapbytes, dtype=np.uint8), (self.map_size_pixels, self.map_size_pixels))
 
         # Pause to allow display to refresh
-        time.sleep(.001)
+        plt.pause(.001)
 
         if self.img_artist is None:
 
@@ -102,11 +105,19 @@ class Visualizer(object):
         Y:      forward/back (cm)
         theta:  rotation (degrees)
         '''
-        #remove old arrow
+        # Remove old arrow
         self.vehicle.remove()
         
-        #create a new arrow
+        # Create a new arrow
         self._add_vehicle(x_mm, y_mm, theta_deg)
+
+        # Show trajectory if indicated
+        s = self.map_scale_mm_per_pixel
+        currpos = x_mm/s,y_mm/s
+        if self.showtraj and not self.prevpos is None:
+            print(self.prevpos, currpos)
+            self.prevpos = (x_mm,y_mm)
+        self.prevpos = currpos
 
     def refresh(self):                   
 
