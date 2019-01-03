@@ -31,11 +31,11 @@ SPEED_MPS       = 10
 DT_SEC          = .01
 
 # Create a Visualizer object
-viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS*1000/MAP_SIZE_PIXELS, 'Random Walk', True)
+viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'Random Walk', True)
 
 # Start in the center of the map
-center_mm = MAP_SIZE_METERS * 1000 / 2
-pose = np.array([center_mm,center_mm,0])
+center_m = MAP_SIZE_METERS / 2
+pose = np.array([center_m,center_m,0])
 
 # Loop till user closes the display
 while True:
@@ -48,11 +48,13 @@ while True:
         exit(0)
 
     # Rotate randomly and move forward
-    s = 1000 * SPEED_MPS * DT_SEC 
+    s = SPEED_MPS * DT_SEC 
     theta = np.radians(pose[2])
     pose[0] += s * np.cos(theta)
     pose[1] += s * np.sin(theta)
     pose[2] += 10 * np.random.randn()
+
+    print('%+3.3f %+3.3f %+3.3f' % tuple(pose))
 
     # Hang a bit before next frame
     sleep(DT_SEC)

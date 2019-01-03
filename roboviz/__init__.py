@@ -31,14 +31,15 @@ matplotlib.use('TkAgg')
 class Visualizer(object):
 
     # Robot display params
-    ROBOT_HEIGHT_MM = 500
-    ROBOT_WIDTH_MM  = 300
+    ROBOT_HEIGHT_M = 0.5
+    ROBOT_WIDTH_M  = 0.3
 
-    def __init__(self, map_size_pixels, map_scale_mm_per_pixel, title='RoboViz', trajectory=False):
+    def __init__(self, map_size_pixels, map_size_meters, title='RoboViz', trajectory=False):
     
         # Store constants for update
+        map_size_meters = map_size_meters
         self.map_size_pixels = map_size_pixels
-        self.map_scale_mm_per_pixel = map_scale_mm_per_pixel
+        self.map_scale_meters_per_pixel = map_size_meters / float(map_size_pixels)
 
         # Create a byte array to display the map with a color overlay
         self.bgrbytes = bytearray(map_size_pixels * map_size_pixels * 3)
@@ -65,20 +66,20 @@ class Visualizer(object):
 
         # Hence we must relabel the axis ticks to show millimeters
         ticks = np.arange(0,self.map_size_pixels+100,100)
-        labels = [str(self.map_scale_mm_per_pixel * tick) for tick in ticks]
+        labels = [str(self.map_scale_meters_per_pixel * tick) for tick in ticks]
         self.ax.xaxis.set_ticks(ticks)
         self.ax.set_xticklabels(labels)
         self.ax.yaxis.set_ticks(ticks)
         self.ax.set_yticklabels(labels)
 
-        self.ax.set_xlabel('X (mm)')
-        self.ax.set_ylabel('Y (mm)')
+        self.ax.set_xlabel('X (m)')
+        self.ax.set_ylabel('Y (m)')
 
         self.ax.grid(False)
 
         # Start vehicle at center
-        map_center_mm = map_scale_mm_per_pixel * map_size_pixels
-        self._add_vehicle(map_center_mm,map_center_mm,0)
+        map_center_m = self.map_scale_meters_per_pixel * map_size_pixels
+        self._add_vehicle(map_center_m,map_center_m,0)
 
         # Store previous position for trjectory
         self.prevpos = None
@@ -99,21 +100,22 @@ class Visualizer(object):
 
             self.img_artist.set_data(mapimg)
 
-    def setPose(self, x_mm, y_mm, theta_deg):
+    def setPose(self, x_m, y_m, theta_deg):
         '''
         Sets vehicle pose:
-        X:      left/right   (cm)
-        Y:      forward/back (cm)
+        X:      left/right   (m)
+        Y:      forward/back (m)
         theta:  rotation (degrees)
         '''
+
         # Remove old arrow
         self.vehicle.remove()
         
         # Create a new arrow
-        self._add_vehicle(x_mm, y_mm, theta_deg)
+        self._add_vehicle(x_m, y_m, theta_deg)
 
         # Show trajectory if indicated
-        currpos = self._mm2pix(x_mm,y_mm)
+        currpos = self._m2pix(x_m,y_m)
         if self.showtraj and not self.prevpos is None:
             self.ax.add_line(mlines.Line2D((self.prevpos[0],currpos[0]), (self.prevpos[1],currpos[1])))
         self.prevpos = currpos
@@ -136,21 +138,22 @@ class Visualizer(object):
 
         return True
 
-    def _mm2pix(self, x_mm, y_mm):
+    def _m2pix(self, x_m, y_m):
 
-        s = self.map_scale_mm_per_pixel
+        s = self.map_scale_meters_per_pixel
 
-        return x_mm/s, y_mm/s
+        return x_m/s, y_m/s
     
-    def _add_vehicle(self, x_mm, y_mm, theta_deg):
+    def _add_vehicle(self, x_m, y_m, theta_deg):
 
         #Use a very short arrow shaft to orient the head of the arrow
         dx, dy = Visualizer._rotate(0, 0, 0.1, theta_deg)
 
-        s = self.map_scale_mm_per_pixel
+        s = self.map_scale_meters_per_pixel
 
-        self.vehicle=self.ax.arrow(*self._mm2pix(x_mm, y_mm), 
-                dx, dy, head_width=Visualizer.ROBOT_WIDTH_MM/s, head_length=Visualizer.ROBOT_HEIGHT_MM/s, fc='r', ec='r')
+        self.vehicle=self.ax.arrow(x_m/s, y_m/s, 
+                dx, dy, head_width=Visualizer.ROBOT_WIDTH_M/s, 
+                head_length=Visualizer.ROBOT_HEIGHT_M/s, fc='r', ec='r')
 
     def _rotate(x, y, r, deg):
         rad = np.radians(deg)
