@@ -108,16 +108,6 @@ class Visualizer(object):
         #create a new arrow
         self._add_vehicle(x_mm, y_mm, theta_deg)
 
-    def _add_vehicle(self, x_mm, y_mm, theta_deg):
-
-        #Use a very short arrow shaft to orient the head of the arrow
-        dx, dy = Visualizer._rotate(0, 0, 0.1, theta_deg)
-
-        s = self.map_scale_mm_per_pixel
-
-        self.vehicle=self.ax.arrow(x_mm/s, y_mm/s, 
-                dx, dy, head_width=ROBOT_WIDTH_MM/s, head_length=ROBOT_HEIGHT_MM/s, fc='r', ec='r')
-
     def refresh(self):                   
 
         # If we have a new figure, something went wrong (closing figure failed)
@@ -136,10 +126,16 @@ class Visualizer(object):
 
         return True
     
-    # Converts millimeters to pixels
-    def mm2pix(self, mm):
-        return int(mm / float(self.map_scale_mm_per_pixel))
-                
+    def _add_vehicle(self, x_mm, y_mm, theta_deg):
+
+        #Use a very short arrow shaft to orient the head of the arrow
+        dx, dy = Visualizer._rotate(0, 0, 0.1, theta_deg)
+
+        s = self.map_scale_mm_per_pixel
+
+        self.vehicle=self.ax.arrow(x_mm/s, y_mm/s, 
+                dx, dy, head_width=ROBOT_WIDTH_MM/s, head_length=ROBOT_HEIGHT_MM/s, fc='r', ec='r')
+
     def _rotate(x, y, r, deg):
         rad = radians(deg)
         c = cos(rad)
