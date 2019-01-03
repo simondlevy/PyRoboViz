@@ -35,7 +35,7 @@ viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'Random Walk', True)
 
 # Start in the center of the map
 center_m = MAP_SIZE_METERS / 2
-pose = np.array([center_m,center_m,0])
+pose = np.array([center_m,center_m,360*np.random.random()])
 
 # Loop till user closes the display
 while True:
