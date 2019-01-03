@@ -22,15 +22,15 @@ GNU General Public License for more details.
 ROBOT_HEIGHT_MM = 500
 ROBOT_WIDTH_MM  = 300
 
+# Essential imports
+import matplotlib.pyplot as plt
+import matplotlib.cm as colormap
+import numpy as np
+from time import sleep
+
 # This helps with Raspberry Pi
 import matplotlib
 matplotlib.use('TkAgg')
-
-import matplotlib.pyplot as plt
-import matplotlib.cm as colormap
-from math import sin, cos, radians
-import numpy as np
-from time import sleep
 
 class Visualizer(object):
 
@@ -137,9 +137,9 @@ class Visualizer(object):
                 dx, dy, head_width=ROBOT_WIDTH_MM/s, head_length=ROBOT_HEIGHT_MM/s, fc='r', ec='r')
 
     def _rotate(x, y, r, deg):
-        rad = radians(deg)
-        c = cos(rad)
-        s = sin(rad)
+        rad = np.radians(deg)
+        c = np.cos(rad)
+        s = np.sin(rad)
         dx = r * c
         dy = r * s
         return x+dx, y+dy 
