@@ -5,5 +5,6 @@
 </p>
 
 This repository contains a simple Python library for visualizing robot pose (X,Y coordinates and
-rotation) in a 2D environment.  It is suitable for use in Simultaneous Localization And Mapping (SLAM) 
-and related projects.  It requires matplotlib and numpy. 
+rotation) and obstacles in a 2D environment.  It is suitable for use in
+Simultaneous Localization And Mapping (SLAM) and related projects.  It requires
+matplotlib and numpy. 
