@@ -18,21 +18,21 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 '''
-# Robot display params
-ROBOT_HEIGHT_MM = 500
-ROBOT_WIDTH_MM  = 300
-
 # Essential imports
 import matplotlib.pyplot as plt
 import matplotlib.cm as colormap
 import numpy as np
-from time import sleep
+import time
 
 # This helps with Raspberry Pi
 import matplotlib
 matplotlib.use('TkAgg')
 
 class Visualizer(object):
+
+    # Robot display params
+    ROBOT_HEIGHT_MM = 500
+    ROBOT_WIDTH_MM  = 300
 
     def __init__(self, map_size_pixels, map_scale_mm_per_pixel, title):
     
@@ -85,7 +85,7 @@ class Visualizer(object):
         mapimg = np.reshape(np.frombuffer(mapbytes, dtype=np.uint8), (self.map_size_pixels, self.map_size_pixels))
 
         # Pause to allow display to refresh
-        sleep(.001)
+        time.sleep(.001)
 
         if self.img_artist is None:
 
@@ -134,7 +134,7 @@ class Visualizer(object):
         s = self.map_scale_mm_per_pixel
 
         self.vehicle=self.ax.arrow(x_mm/s, y_mm/s, 
-                dx, dy, head_width=ROBOT_WIDTH_MM/s, head_length=ROBOT_HEIGHT_MM/s, fc='r', ec='r')
+                dx, dy, head_width=Visualizer.ROBOT_WIDTH_MM/s, head_length=Visualizer.ROBOT_HEIGHT_MM/s, fc='r', ec='r')
 
     def _rotate(x, y, r, deg):
         rad = np.radians(deg)
