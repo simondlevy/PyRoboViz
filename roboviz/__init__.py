@@ -34,7 +34,7 @@ class Visualizer(object):
     ROBOT_HEIGHT_M = 0.5
     ROBOT_WIDTH_M  = 0.3
 
-    def __init__(self, map_size_pixels, map_size_meters, title='RoboViz', trajectory=False, origincenter=False):
+    def __init__(self, map_size_pixels, map_size_meters, title, trajectory):
     
         # Store constants for update
         map_size_meters = map_size_meters
@@ -60,19 +60,6 @@ class Visualizer(object):
         # Use an "artist" to speed up map drawing
         self.img_artist = None
 
-        # Support centering at origin
-        shift = -self.map_size_pixels / 2 if origincenter else 0
-
-        # We base the axis on pixels, to support displaying the map
-        self.ax.set_xlim([shift, map_size_pixels+shift])
-        self.ax.set_ylim([shift, map_size_pixels+shift])
-
-        # Hence we must relabel the axis ticks to show millimeters
-        ticks = np.arange(shift,self.map_size_pixels+shift+100,100)
-        labels = [str(self.map_scale_meters_per_pixel * tick) for tick in ticks]
-        self.ax.set_xticklabels(labels)
-        self.ax.set_yticklabels(labels)
-
         self.ax.set_xlabel('X (m)')
         self.ax.set_ylabel('Y (m)')
 
@@ -81,24 +68,12 @@ class Visualizer(object):
         # Start vehicle at center
         self._add_vehicle(0,0,0)
 
-        # Store previous position for trjectory
+        # Store previous position for trajectory
         self.prevpos = None
         self.showtraj = trajectory
 
-    def displayMap(self, mapbytes):
-
-        mapimg = np.reshape(np.frombuffer(mapbytes, dtype=np.uint8), (self.map_size_pixels, self.map_size_pixels))
-
-        # Pause to allow display to refresh
-        plt.pause(.001)
-
-        if self.img_artist is None:
-
-            self.img_artist = self.ax.imshow(mapimg, cmap=colormap.gray)
-
-        else:
-
-            self.img_artist.set_data(mapimg)
+        # Set axes for center at origin
+        self._set_axes(-self.map_size_pixels / 2)
 
     def setPose(self, x_m, y_m, theta_deg):
         '''
@@ -138,6 +113,18 @@ class Visualizer(object):
 
         return True
 
+    def _set_axes(self, shift):
+
+        # We base the axis on pixels, to support displaying the map
+        self.ax.set_xlim([shift, self.map_size_pixels+shift])
+        self.ax.set_ylim([shift, self.map_size_pixels+shift])
+
+        # Hence we must relabel the axis ticks to show millimeters
+        ticks = np.arange(shift,self.map_size_pixels+shift+100,100)
+        labels = [str(self.map_scale_meters_per_pixel * tick) for tick in ticks]
+        self.ax.set_xticklabels(labels)
+        self.ax.set_yticklabels(labels)
+
     def _m2pix(self, x_m, y_m):
 
         s = self.map_scale_meters_per_pixel
@@ -162,3 +149,28 @@ class Visualizer(object):
         dx = r * c
         dy = r * s
         return x+dx, y+dy 
+
+class MapVisualizer(Visualizer):
+    
+    def __init__(self, map_size_pixels, map_size_meters, title='MapVisualizer', trajectory=False):
+
+        Visualizer.__init__(self, map_size_pixels, map_size_meters, title, trajectory)
+
+        # Override zero-origin axes
+        Visualizer._set_axes(self, 0)
+
+    def displayMap(self, mapbytes):
+
+        mapimg = np.reshape(np.frombuffer(mapbytes, dtype=np.uint8), (self.map_size_pixels, self.map_size_pixels))
+
+        # Pause to allow display to refresh
+        plt.pause(.001)
+
+        if self.img_artist is None:
+
+            self.img_artist = self.ax.imshow(mapimg, cmap=colormap.gray)
+
+        else:
+
+            self.img_artist.set_data(mapimg)
+

@@ -31,7 +31,7 @@ SPEED_MPS       = 10
 DT_SEC          = .01
 
 # Create a Visualizer object with a trajectory, centered at 0,0
-viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'Random Walk', True, True)
+viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'Random Walk', True)
 
 # Start in the center of the map with a random heading
 pose = np.array([0,0,360*np.random.random()])
