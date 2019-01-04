@@ -65,11 +65,10 @@ class Visualizer(object):
         self.ax.set_ylim([0, map_size_pixels])
 
         # Hence we must relabel the axis ticks to show millimeters
-        ticks = np.arange(0,self.map_size_pixels+100,100)
+        half = self.map_size_pixels / 2
+        ticks = np.arange(-half,half+100,100)
         labels = [str(self.map_scale_meters_per_pixel * tick) for tick in ticks]
-        self.ax.xaxis.set_ticks(ticks)
         self.ax.set_xticklabels(labels)
-        self.ax.yaxis.set_ticks(ticks)
         self.ax.set_yticklabels(labels)
 
         self.ax.set_xlabel('X (m)')
