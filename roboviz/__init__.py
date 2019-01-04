@@ -34,7 +34,7 @@ class Visualizer(object):
     ROBOT_HEIGHT_M = 0.5
     ROBOT_WIDTH_M  = 0.3
 
-    def __init__(self, map_size_pixels, map_size_meters, title='RoboViz', trajectory=False):
+    def __init__(self, map_size_pixels, map_size_meters, title='RoboViz', trajectory=False, origincenter=False):
     
         # Store constants for update
         map_size_meters = map_size_meters
@@ -60,13 +60,14 @@ class Visualizer(object):
         # Use an "artist" to speed up map drawing
         self.img_artist = None
 
+        shift = -self.map_size_pixels / 2 if origincenter else 0
+
         # We base the axis on pixels, to support displaying the map
-        self.ax.set_xlim([0, map_size_pixels])
-        self.ax.set_ylim([0, map_size_pixels])
+        self.ax.set_xlim([0+shift, map_size_pixels+shift])
+        self.ax.set_ylim([0+shift, map_size_pixels+shift])
 
         # Hence we must relabel the axis ticks to show millimeters
-        half = self.map_size_pixels / 2
-        ticks = np.arange(-half,half+100,100)
+        ticks = np.arange(0+shift,self.map_size_pixels+shift+100,100)
         labels = [str(self.map_scale_meters_per_pixel * tick) for tick in ticks]
         self.ax.set_xticklabels(labels)
         self.ax.set_yticklabels(labels)
@@ -77,8 +78,7 @@ class Visualizer(object):
         self.ax.grid(False)
 
         # Start vehicle at center
-        map_center_m = self.map_scale_meters_per_pixel * map_size_pixels
-        self._add_vehicle(map_center_m,map_center_m,0)
+        self._add_vehicle(0,0,0)
 
         # Store previous position for trjectory
         self.prevpos = None

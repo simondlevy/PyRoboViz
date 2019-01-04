@@ -30,12 +30,11 @@ MAP_SIZE_METERS = 32
 SPEED_MPS       = 10
 DT_SEC          = .01
 
-# Create a Visualizer object
-viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'Random Walk', True)
+# Create a Visualizer object with a trajectory, centered at 0,0
+viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'Random Walk', True, True)
 
-# Start in the center of the map
-center_m = MAP_SIZE_METERS / 2
-pose = np.array([center_m,center_m,360*np.random.random()])
+# Start in the center of the map with a random heading
+pose = np.array([0,0,360*np.random.random()])
 
 # Loop till user closes the display
 while True:
