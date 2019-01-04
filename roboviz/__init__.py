@@ -60,14 +60,15 @@ class Visualizer(object):
         # Use an "artist" to speed up map drawing
         self.img_artist = None
 
+        # Support centering at origin
         shift = -self.map_size_pixels / 2 if origincenter else 0
 
         # We base the axis on pixels, to support displaying the map
-        self.ax.set_xlim([0+shift, map_size_pixels+shift])
-        self.ax.set_ylim([0+shift, map_size_pixels+shift])
+        self.ax.set_xlim([shift, map_size_pixels+shift])
+        self.ax.set_ylim([shift, map_size_pixels+shift])
 
         # Hence we must relabel the axis ticks to show millimeters
-        ticks = np.arange(0+shift,self.map_size_pixels+shift+100,100)
+        ticks = np.arange(shift,self.map_size_pixels+shift+100,100)
         labels = [str(self.map_scale_meters_per_pixel * tick) for tick in ticks]
         self.ax.set_xticklabels(labels)
         self.ax.set_yticklabels(labels)
