@@ -34,7 +34,7 @@ class Visualizer(object):
     ROBOT_HEIGHT_M = 0.5
     ROBOT_WIDTH_M  = 0.3
 
-    def __init__(self, map_size_pixels, map_size_meters, title, trajectory):
+    def __init__(self, map_size_pixels, map_size_meters, title, show_trajectory):
     
         # Store constants for update
         map_size_meters = map_size_meters
@@ -70,7 +70,7 @@ class Visualizer(object):
 
         # Store previous position for trajectory
         self.prevpos = None
-        self.showtraj = trajectory
+        self.showtraj = show_trajectory
 
         # Set axes for center at origin
         self._set_axes(-self.map_size_pixels / 2)
@@ -152,9 +152,9 @@ class Visualizer(object):
 
 class MapVisualizer(Visualizer):
     
-    def __init__(self, map_size_pixels, map_size_meters, title='MapVisualizer', trajectory=False):
+    def __init__(self, map_size_pixels, map_size_meters, title='MapVisualizer', show_trajectory=False):
 
-        Visualizer.__init__(self, map_size_pixels, map_size_meters, title, trajectory)
+        Visualizer.__init__(self, map_size_pixels, map_size_meters, title, show_trajectory)
 
         # Override zero-origin axes
         Visualizer._set_axes(self, 0)
