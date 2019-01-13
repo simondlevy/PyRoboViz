@@ -28,10 +28,9 @@ import numpy as np
 MAP_SIZE_PIXELS = 800
 MAP_SIZE_METERS = 32
 SPEED_MPS       = 1
-ZERO_ANGLE_DEG  = 0
 
 # Create a Visualizer object with a trajectory, centered at 0,0
-viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'Random Walk', True, ZERO_ANGLE_DEG)
+viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'Random Walk', True)
 
 # Start in the center of the map with a random heading
 pose = np.array([0,0,360*np.random.random()])

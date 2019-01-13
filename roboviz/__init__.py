@@ -35,7 +35,7 @@ class Visualizer(object):
     ROBOT_HEIGHT_M = 0.5
     ROBOT_WIDTH_M  = 0.3
 
-    def __init__(self, map_size_pixels, map_size_meters, title, show_trajectory=False, zero_angle=None):
+    def __init__(self, map_size_pixels, map_size_meters, title, show_trajectory=False, zero_angle=0):
 
         # Put origin in center
         self._init(map_size_pixels, map_size_meters, title, -map_size_pixels / 2, show_trajectory, zero_angle)
@@ -46,7 +46,7 @@ class Visualizer(object):
 
         return self._refresh()
 
-    def _init(self, map_size_pixels, map_size_meters, title, shift, show_trajectory=False, zero_angle=None):
+    def _init(self, map_size_pixels, map_size_meters, title, shift, show_trajectory=False, zero_angle=0):
 
         # Store constants for update
         map_size_meters = map_size_meters
@@ -87,17 +87,16 @@ class Visualizer(object):
         self.prevpos = None
         self.showtraj = show_trajectory
 
-        # Set up zero-angle
-        self.zero_angle = float(zero_angle) if not zero_angle is None else None
-        self.start_angle = None
-        self.start_pos =  None
-
         # We base the axis on pixels, to support displaying the map
         self.ax.set_xlim([shift, self.map_size_pixels+shift])
         self.ax.set_ylim([shift, self.map_size_pixels+shift])
 
         # Set up default shift for centering at origin
         shift = -self.map_size_pixels / 2
+
+        self.zero_angle = zero_angle
+        self.start_angle = None
+        self.rotate_angle = 0
 
     def _setPose(self, x_m, y_m, theta_deg):
         '''
@@ -107,16 +106,27 @@ class Visualizer(object):
         theta:  rotation (degrees)
         '''
 
-        if not self.zero_angle is None:
-            if self.start_angle is None:
-                self.start_angle = theta_deg
-                self.start_pos = x_m,y_m
+        '''
+        if self.start_angle is None:
+            self.start_angle = theta_deg
+            self.rotate_angle = self.zero_angle - self.start_angle
+
+        d = self.rotate_angle
+
+        a = np.radians(d)
+
+        c = np.cos(a)
+        s = np.sin(a)
+
+        x_m,y_m = x_m*c-y_m*s, y_m*c+x_m*s
+        '''
+        d = 0
 
         if not self.vehicle is None:
             self.vehicle.remove()
-        
+
         #Use a very short arrow shaft to orient the head of the arrow
-        theta_rad = np.radians(theta_deg)
+        theta_rad = np.radians(theta_deg+d)
         c = np.cos(theta_rad)
         s = np.sin(theta_rad)
         l = 0.1
@@ -128,7 +138,6 @@ class Visualizer(object):
         self.vehicle=self.ax.arrow(x_m/s, y_m/s, 
                 dx, dy, head_width=Visualizer.ROBOT_WIDTH_M/s, 
                 head_length=Visualizer.ROBOT_HEIGHT_M/s, fc='r', ec='r')
-
 
         # Show trajectory if indicated
         currpos = self._m2pix(x_m,y_m)
@@ -162,10 +171,10 @@ class Visualizer(object):
     
 class MapVisualizer(Visualizer):
     
-    def __init__(self, map_size_pixels, map_size_meters, title='MapVisualizer', show_trajectory=False, zero_angle=None):
+    def __init__(self, map_size_pixels, map_size_meters, title='MapVisualizer', show_trajectory=False):
 
-        # Put origin in lower left
-        Visualizer._init(self, map_size_pixels, map_size_meters, title, 0, show_trajectory, zero_angle)
+        # Put origin in lower left; disallow zero-angle setting
+        Visualizer._init(self, map_size_pixels, map_size_meters, title, 0, show_trajectory, 0)
 
     def display(self, x_m, y_m, theta_deg, mapbytes):
 
