@@ -65,8 +65,7 @@ class Visualizer(object):
 
         self.ax.grid(False)
 
-        # Start vehicle at center
-        self._add_vehicle(0,0,0)
+        self.vehicle = None
 
         # Store previous position for trajectory
         self.prevpos = None
@@ -93,11 +92,19 @@ class Visualizer(object):
                 self.start_angle = theta_deg
                 self.start_pos = x_m,y_m
 
-         # Remove old arrow
-        self.vehicle.remove()
+        # Remove old arrow
+        if not self.vehicle is None:
+            self.vehicle.remove()
         
-        # Create a new arrow
-        self._add_vehicle(x_m, y_m, theta_deg)
+        #Use a very short arrow shaft to orient the head of the arrow
+        dx, dy = Visualizer._rotate(0, 0, 0.1, theta_deg)
+
+        s = self.map_scale_meters_per_pixel
+
+        self.vehicle=self.ax.arrow(x_m/s, y_m/s, 
+                dx, dy, head_width=Visualizer.ROBOT_WIDTH_M/s, 
+                head_length=Visualizer.ROBOT_HEIGHT_M/s, fc='r', ec='r')
+
 
         # Show trajectory if indicated
         currpos = self._m2pix(x_m,y_m)
@@ -141,17 +148,6 @@ class Visualizer(object):
 
         return x_m/s, y_m/s
     
-    def _add_vehicle(self, x_m, y_m, theta_deg):
-
-        #Use a very short arrow shaft to orient the head of the arrow
-        dx, dy = Visualizer._rotate(0, 0, 0.1, theta_deg)
-
-        s = self.map_scale_meters_per_pixel
-
-        self.vehicle=self.ax.arrow(x_m/s, y_m/s, 
-                dx, dy, head_width=Visualizer.ROBOT_WIDTH_M/s, 
-                head_length=Visualizer.ROBOT_HEIGHT_M/s, fc='r', ec='r')
-
     def _rotate(x, y, r, deg):
         rad = np.radians(deg)
         c = np.cos(rad)
