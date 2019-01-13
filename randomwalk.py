@@ -43,7 +43,12 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--seed', help='set seed for pseudo-random number generator')
     cmdargs = parser.parse_args()
 
+    # Set seed for pseudo-random number generator if indicated
+    if not cmdargs.seed is None:
+        np.random.seed(int(cmdargs.seed))
+
     # Create a Visualizer object with a trajectory, centered at 0,0
+
     viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS, 'Random Walk', True)
 
     # Start in the center of the map with a random heading
@@ -54,7 +59,7 @@ if __name__ == '__main__':
 
     # Loop till user closes the display
     #while True:
-    for k in range(10):
+    for k in range(5):
 
         print(pose[2])
 
