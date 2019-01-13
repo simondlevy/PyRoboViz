@@ -59,6 +59,9 @@ class Visualizer(object):
         # No vehicle to show yet
         self.vehicle = None
 
+        # No axes yet, because we may want to create them on-the-fly
+        self.ax = None
+
         # Store previous position for trajectory
         self.prevpos = None
         self.showtraj = show_trajectory
@@ -90,7 +93,7 @@ class Visualizer(object):
                 self.start_angle = theta_deg
                 self.start_pos = x_m,y_m
 
-        if self.vehicle is None:
+        if self.ax is None:
 
             self.ax = self.fig.gca()
             self.ax.set_aspect("auto")
@@ -110,6 +113,7 @@ class Visualizer(object):
             self.ax.set_yticklabels(labels)
 
         else:
+
             self.vehicle.remove()
         
         #Use a very short arrow shaft to orient the head of the arrow
