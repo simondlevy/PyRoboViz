@@ -45,39 +45,31 @@ class Visualizer(object):
         self.bgrbytes = bytearray(map_size_pixels * map_size_pixels * 3)
         
         # Make a nice big (10"x10") figure
-        fig = plt.figure(figsize=(10,10))
+        self.fig = plt.figure(figsize=(10,10))
 
         # Store Python ID of figure to detect window close
-        self.figid = id(fig)
+        self.figid = id(self.fig)
 
-        fig.canvas.set_window_title('SLAM')
+        self.fig.canvas.set_window_title('SLAM')
         plt.title(title)
-
-        self.ax = fig.gca()
-        self.ax.set_aspect("auto")
-        self.ax.set_autoscale_on(True)
 
         # Use an "artist" to speed up map drawing
         self.img_artist = None
 
-        self.ax.set_xlabel('X (m)')
-        self.ax.set_ylabel('Y (m)')
-
-        self.ax.grid(False)
-
+        # No vehicle to show yet
         self.vehicle = None
 
         # Store previous position for trajectory
         self.prevpos = None
         self.showtraj = show_trajectory
 
-        # Set axes for center at origin
-        self._set_axes(-self.map_size_pixels / 2)
-
         # Set up zero-angle
         self.zero_angle = float(zero_angle) if not zero_angle is None else None
         self.start_angle = None
         self.start_pos =  None
+
+        # Set up default shift for centering at origin
+        self.shift = -self.map_size_pixels / 2
 
     def setPose(self, x_m, y_m, theta_deg):
         '''
@@ -92,8 +84,26 @@ class Visualizer(object):
                 self.start_angle = theta_deg
                 self.start_pos = x_m,y_m
 
-        # Remove old arrow
-        if not self.vehicle is None:
+        if self.vehicle is None:
+
+            self.ax = self.fig.gca()
+            self.ax.set_aspect("auto")
+            self.ax.set_autoscale_on(True)
+            self.ax.set_xlabel('X (m)')
+            self.ax.set_ylabel('Y (m)')
+            self.ax.grid(False)
+
+            # We base the axis on pixels, to support displaying the map
+            self.ax.set_xlim([self.shift, self.map_size_pixels+self.shift])
+            self.ax.set_ylim([self.shift, self.map_size_pixels+self.shift])
+
+            # Hence we must relabel the axis ticks to show millimeters
+            ticks = np.arange(self.shift,self.map_size_pixels+self.shift+100,100)
+            labels = [str(self.map_scale_meters_per_pixel * tick) for tick in ticks]
+            self.ax.set_xticklabels(labels)
+            self.ax.set_yticklabels(labels)
+
+        else:
             self.vehicle.remove()
         
         #Use a very short arrow shaft to orient the head of the arrow
@@ -135,18 +145,6 @@ class Visualizer(object):
 
         return True
 
-    def _set_axes(self, shift):
-
-        # We base the axis on pixels, to support displaying the map
-        self.ax.set_xlim([shift, self.map_size_pixels+shift])
-        self.ax.set_ylim([shift, self.map_size_pixels+shift])
-
-        # Hence we must relabel the axis ticks to show millimeters
-        ticks = np.arange(shift,self.map_size_pixels+shift+100,100)
-        labels = [str(self.map_scale_meters_per_pixel * tick) for tick in ticks]
-        self.ax.set_xticklabels(labels)
-        self.ax.set_yticklabels(labels)
-
     def _m2pix(self, x_m, y_m):
 
         s = self.map_scale_meters_per_pixel
@@ -159,10 +157,12 @@ class MapVisualizer(Visualizer):
 
         Visualizer.__init__(self, map_size_pixels, map_size_meters, title, show_trajectory, zero_angle)
 
-        # Override zero-origin axes
-        Visualizer._set_axes(self, 0)
+        # Put origin in lower-left
+        self.shift = 0
 
-    def displayMap(self, mapbytes):
+    def display(self, x_m, y_m, theta_deg, mapbytes):
+
+        self.setPose(x_m, y_m, theta_deg)
 
         mapimg = np.reshape(np.frombuffer(mapbytes, dtype=np.uint8), (self.map_size_pixels, self.map_size_pixels))
 
@@ -176,4 +176,6 @@ class MapVisualizer(Visualizer):
         else:
 
             self.img_artist.set_data(mapimg)
+
+        return self.refresh()
 
