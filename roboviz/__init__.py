@@ -34,7 +34,7 @@ class Visualizer(object):
     ROBOT_HEIGHT_M = 0.5
     ROBOT_WIDTH_M  = 0.3
 
-    def __init__(self, map_size_pixels, map_size_meters, title, show_trajectory):
+    def __init__(self, map_size_pixels, map_size_meters, title, show_trajectory=False, zero_angle=None):
     
         # Store constants for update
         map_size_meters = map_size_meters
@@ -75,6 +75,11 @@ class Visualizer(object):
         # Set axes for center at origin
         self._set_axes(-self.map_size_pixels / 2)
 
+        # Set up zero-angle
+        self.zero_angle = float(zero_angle) if not zero_angle is None else None
+        self.start_angle = None
+        self.start_pos =  None
+
     def setPose(self, x_m, y_m, theta_deg):
         '''
         Sets vehicle pose:
@@ -83,7 +88,12 @@ class Visualizer(object):
         theta:  rotation (degrees)
         '''
 
-        # Remove old arrow
+        if not self.zero_angle is None:
+            if self.start_angle is None:
+                self.start_angle = theta_deg
+                self.start_pos = x_m,y_m
+
+         # Remove old arrow
         self.vehicle.remove()
         
         # Create a new arrow
@@ -152,9 +162,9 @@ class Visualizer(object):
 
 class MapVisualizer(Visualizer):
     
-    def __init__(self, map_size_pixels, map_size_meters, title='MapVisualizer', show_trajectory=False):
+    def __init__(self, map_size_pixels, map_size_meters, title='MapVisualizer', show_trajectory=False, zero_angle=None):
 
-        Visualizer.__init__(self, map_size_pixels, map_size_meters, title, show_trajectory)
+        Visualizer.__init__(self, map_size_pixels, map_size_meters, title, show_trajectory, zero_angle)
 
         # Override zero-origin axes
         Visualizer._set_axes(self, 0)
