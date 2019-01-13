@@ -97,8 +97,13 @@ class Visualizer(object):
             self.vehicle.remove()
         
         #Use a very short arrow shaft to orient the head of the arrow
-        dx, dy = Visualizer._rotate(0, 0, 0.1, theta_deg)
-
+        theta_rad = np.radians(theta_deg)
+        c = np.cos(theta_rad)
+        s = np.sin(theta_rad)
+        l = 0.1
+        dx = l * c
+        dy = l * s
+ 
         s = self.map_scale_meters_per_pixel
 
         self.vehicle=self.ax.arrow(x_m/s, y_m/s, 
@@ -148,14 +153,6 @@ class Visualizer(object):
 
         return x_m/s, y_m/s
     
-    def _rotate(x, y, r, deg):
-        rad = np.radians(deg)
-        c = np.cos(rad)
-        s = np.sin(rad)
-        dx = r * c
-        dy = r * s
-        return x+dx, y+dy 
-
 class MapVisualizer(Visualizer):
     
     def __init__(self, map_size_pixels, map_size_meters, title='MapVisualizer', show_trajectory=False, zero_angle=None):
