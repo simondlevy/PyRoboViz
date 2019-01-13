@@ -1,4 +1,4 @@
-'''
+'''self.rotate_angle)
 roboviz.py - Python classes for displaying maps and robots
 
 Requires: numpy, matplotlib
@@ -106,19 +106,19 @@ class Visualizer(object):
         theta:  rotation (degrees)
         '''
 
-        if self.start_angle is None:
+        # If zero-angle was indicated, grab first angle to compute rotation
+        if self.start_angle is None and self.zero_angle != 0: 
             self.start_angle = theta_deg
             self.rotate_angle = self.zero_angle - self.start_angle
 
+        # Rotate by computed angle, or zero if no zero-angle indicated
         d = self.rotate_angle
-
         a = np.radians(d)
-
         c = np.cos(a)
         s = np.sin(a)
-
         x_m,y_m = x_m*c-y_m*s, y_m*c+x_m*s
 
+        # Erase previous vehicle image after first iteration
         if not self.vehicle is None:
             self.vehicle.remove()
 

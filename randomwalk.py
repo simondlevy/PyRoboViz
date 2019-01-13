@@ -58,10 +58,7 @@ if __name__ == '__main__':
     prevtime = time()
 
     # Loop till user closes the display
-    #while True:
-    for k in range(5):
-
-        print(pose[2])
+    while True:
 
         # Set current pose in visualizer the display, exiting gracefully if user closes it
         if not viz.display(*pose):
