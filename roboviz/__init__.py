@@ -71,7 +71,13 @@ class Visualizer(object):
         # Set up default shift for centering at origin
         self.shift = -self.map_size_pixels / 2
 
-    def setPose(self, x_m, y_m, theta_deg):
+    def display(self, x_m, y_m, theta_deg):
+
+        self._setPose(x_m, y_m, theta_deg)
+
+        return self._refresh()
+
+    def _setPose(self, x_m, y_m, theta_deg):
         '''
         Sets vehicle pose:
         X:      left/right   (m)
@@ -127,7 +133,7 @@ class Visualizer(object):
             self.ax.add_line(mlines.Line2D((self.prevpos[0],currpos[0]), (self.prevpos[1],currpos[1])))
         self.prevpos = currpos
 
-    def refresh(self):                   
+    def _refresh(self):                   
 
         # If we have a new figure, something went wrong (closing figure failed)
         if self.figid != id(plt.gcf()):
@@ -162,7 +168,7 @@ class MapVisualizer(Visualizer):
 
     def display(self, x_m, y_m, theta_deg, mapbytes):
 
-        self.setPose(x_m, y_m, theta_deg)
+        self._setPose(x_m, y_m, theta_deg)
 
         mapimg = np.reshape(np.frombuffer(mapbytes, dtype=np.uint8), (self.map_size_pixels, self.map_size_pixels))
 
@@ -177,5 +183,5 @@ class MapVisualizer(Visualizer):
 
             self.img_artist.set_data(mapimg)
 
-        return self.refresh()
+        return self._refresh()
 

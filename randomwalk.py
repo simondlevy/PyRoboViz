@@ -42,11 +42,8 @@ prevtime = time()
 # Loop till user closes the display
 while True:
 
-    # Set current pose in visualizer
-    viz.setPose(*pose)
-
-    # Refresh the display, exiting gracefully if user closes it
-    if not viz.refresh():
+    # Set current pose in visualizer the display, exiting gracefully if user closes it
+    if not viz.display(*pose):
         exit(0)
 
     # Rotate randomly and move forward
