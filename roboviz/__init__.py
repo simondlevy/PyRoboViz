@@ -106,7 +106,6 @@ class Visualizer(object):
         theta:  rotation (degrees)
         '''
 
-        '''
         if self.start_angle is None:
             self.start_angle = theta_deg
             self.rotate_angle = self.zero_angle - self.start_angle
@@ -119,13 +118,11 @@ class Visualizer(object):
         s = np.sin(a)
 
         x_m,y_m = x_m*c-y_m*s, y_m*c+x_m*s
-        '''
-        d = 0
 
         if not self.vehicle is None:
             self.vehicle.remove()
 
-        #Use a very short arrow shaft to orient the head of the arrow
+        # Use a very short arrow shaft to orient the head of the arrow
         theta_rad = np.radians(theta_deg+d)
         c = np.cos(theta_rad)
         s = np.sin(theta_rad)
