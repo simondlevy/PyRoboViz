@@ -73,7 +73,6 @@ class Visualizer(object):
 
         # Create axes
         self.ax = fig.gca()
-        self.ax.set_autoscale_on(True)
         self.ax.set_xlabel('X (m)')
         self.ax.set_ylabel('Y (m)')
         self.ax.grid(False)
