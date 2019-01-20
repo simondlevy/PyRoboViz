@@ -1,4 +1,4 @@
-'''self.rotate_angle)
+'''
 roboviz.py - Python classes for displaying maps and robots
 
 Requires: numpy, matplotlib
