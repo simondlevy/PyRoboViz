@@ -1,7 +1,7 @@
 '''
 Python distutils setup file for installing Python output of MSPPG
 
-Copyright (C) Rob Jones, Alec Singer, Chris Lavin, Blake Liebling, Simon D. Levy 2015
+Copyright (C) Simon D. Levy 2026
 
 This file is part of PyRoboViz.
 

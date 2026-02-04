@@ -35,21 +35,8 @@ class Visualizer(object):
     ROBOT_HEIGHT_M = 0.5
     ROBOT_WIDTH_M = 0.3
 
-    def __init__(self, map_size_pixels, map_size_meters, title='',
-                 show_trajectory=False, zero_angle=0):
-
-        # Put origin in center
-        self._init(map_size_pixels, map_size_meters, title,
-                   -map_size_pixels / 2, show_trajectory, zero_angle)
-
-    def display(self, x_m, y_m, theta_deg):
-
-        self._setPose(x_m, y_m, theta_deg)
-
-        return self._refresh()
-
-    def _init(self, map_size_pixels, map_size_meters, title, shift,
-              show_trajectory=False, zero_angle=0):
+    def __init__( self, map_size_pixels, map_size_meters,
+                  title='', show_trajectory=False, zero_angle=0):
 
         # Store constants for update
         map_size_meters = map_size_meters
@@ -81,27 +68,41 @@ class Visualizer(object):
         self.ax.set_ylabel('Y (mm)')
         self.ax.grid(False)
 
-        # Hence we must relabel the axis ticks to show millimeters
-        #  ticks = np.arange(shift, self.map_size_pixels+shift+100, 100)
-        #  labels = [str(self.map_scale_meters_per_pixel * tick)
-        #          for tick in ticks]
-        # self.ax.set_xticklabels(labels)
-        # self.ax.set_yticklabels(labels)
-
         # Store previous position for trajectory
         self.prevpos = None
         self.showtraj = show_trajectory
+
+        self.zero_angle = zero_angle
+        self.start_angle = None
+        self.rotate_angle = 0
+
+    def display(self, x_m, y_m, theta_deg, map_bytes=None):
+
+        self._setPose(x_m, y_m, theta_deg)
+
+        shift = -self.map_size_pixels / 2 if map_bytes is None else 0
 
         # We base the axis on pixels, to support displaying the map
         self.ax.set_xlim([shift, self.map_size_pixels+shift])
         self.ax.set_ylim([shift, self.map_size_pixels+shift])
 
-        # Set up default shift for centering at origin
-        shift = -self.map_size_pixels / 2
+        if map_bytes is not None:
 
-        self.zero_angle = zero_angle
-        self.start_angle = None
-        self.rotate_angle = 0
+            mapimg = np.reshape(np.frombuffer(map_bytes, dtype=np.uint8),
+                                (self.map_size_pixels, self.map_size_pixels))
+
+            # Pause to allow display to refresh
+            plt.pause(.001)
+
+            if self.img_artist is None:
+
+                self.img_artist = self.ax.imshow(mapimg, cmap=colormap.gray)
+
+            else:
+
+                self.img_artist.set_data(mapimg)
+
+        return self._refresh()
 
     def _setPose(self, x_m, y_m, theta_deg):
         '''
@@ -143,7 +144,8 @@ class Visualizer(object):
                                      fc='r', ec='r')
 
         # Show trajectory if indicated
-        currpos = self._m2pix(x_m, y_m)
+        s = self.map_scale_meters_per_pixel
+        currpos = x_m/s, y_m/s
         if self.showtraj and self.prevpos is not None:
             self.ax.add_line(mlines.Line2D((self.prevpos[0], currpos[0]),
                              (self.prevpos[1], currpos[1])))
@@ -166,39 +168,3 @@ class Visualizer(object):
             return False
 
         return True
-
-    def _m2pix(self, x_m, y_m):
-
-        s = self.map_scale_meters_per_pixel
-
-        return x_m/s, y_m/s
-
-
-class MapVisualizer(Visualizer):
-
-    def __init__(self, map_size_pixels, map_size_meters, title='MapVisualizer',
-                 show_trajectory=False):
-
-        # Put origin in lower left; disallow zero-angle setting
-        Visualizer._init(self, map_size_pixels, map_size_meters,
-                         title, 0, show_trajectory, 0)
-
-    def display(self, x_m, y_m, theta_deg, mapbytes):
-
-        self._setPose(x_m, y_m, theta_deg)
-
-        mapimg = np.reshape(np.frombuffer(mapbytes, dtype=np.uint8),
-                            (self.map_size_pixels, self.map_size_pixels))
-
-        # Pause to allow display to refresh
-        plt.pause(.001)
-
-        if self.img_artist is None:
-
-            self.img_artist = self.ax.imshow(mapimg, cmap=colormap.gray)
-
-        else:
-
-            self.img_artist.set_data(mapimg)
-
-        return self._refresh()
