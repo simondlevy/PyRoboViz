@@ -77,8 +77,8 @@ class Visualizer(object):
 
         # Create axes
         self.ax = fig.gca()
-        self.ax.set_xlabel('X (m)')
-        self.ax.set_ylabel('Y (m)')
+        self.ax.set_xlabel('X (mm)')
+        self.ax.set_ylabel('Y (mm)')
         self.ax.grid(False)
 
         # Hence we must relabel the axis ticks to show millimeters
