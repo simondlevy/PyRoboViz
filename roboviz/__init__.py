@@ -35,7 +35,7 @@ class Visualizer(object):
     ROBOT_HEIGHT_M = 0.5
     ROBOT_WIDTH_M = 0.3
 
-    def __init__(self, map_size_pixels, map_size_meters, title,
+    def __init__(self, map_size_pixels, map_size_meters, title='',
                  show_trajectory=False, zero_angle=0):
 
         # Put origin in center
