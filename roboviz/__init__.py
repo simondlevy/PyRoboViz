@@ -90,8 +90,9 @@ class Visualizer(object):
         self.ax.set_ylim([shift, self.map_size_pixels+shift])
 
         if map_bytes is not None:
-
             self._showMap(map_bytes)
+
+        self._showObstacles(obstacles)
 
         return self._refresh()
 
@@ -110,6 +111,12 @@ class Visualizer(object):
         else:
 
             self.img_artist.set_data(mapimg)
+
+    def _showObstacles(self, obstacles):
+
+        for obstacle in obstacles:
+
+            pass
 
 
     def _setPose(self, x_m, y_m, theta_deg):
