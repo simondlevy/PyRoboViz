@@ -35,11 +35,13 @@ class Visualizer(object):
     ROBOT_HEIGHT_M = 0.5
     ROBOT_WIDTH_M = 0.3
 
-    def __init__( self, map_size_pixels, map_size_meters,
-                  title='', show_trajectory=False, zero_angle=0):
+    def __init__(self, map_size_pixels, map_size_meters,
+                 obstacles = [],
+                 title='',
+                 show_trajectory=False,
+                 zero_angle=0):
 
         # Store constants for update
-        map_size_meters = map_size_meters
         self.map_size_pixels = map_size_pixels
         self.map_scale_meters_per_pixel = (
                 map_size_meters / float(map_size_pixels))
