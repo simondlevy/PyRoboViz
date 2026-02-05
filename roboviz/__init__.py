@@ -115,7 +115,10 @@ class Visualizer(object):
 
         for obstacle in obstacles:
 
-            plt.fill(obstacle['x'], obstacle['y'], color='black')
+            m_to_mm = lambda ms : list(map(lambda m : m * 1000, ms))
+
+            plt.fill(m_to_mm(obstacle['x']), m_to_mm(obstacle['y']),
+                     color='black')
 
     def _setPose(self, x_m, y_m, theta_deg, start_angle, showtraj, flip_axes):
 
