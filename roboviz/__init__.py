@@ -59,8 +59,6 @@ class Visualizer(object):
 
         # Create axes
         self.ax = fig.gca()
-        self.ax.set_xlabel('X (mm)')
-        self.ax.set_ylabel('Y (mm)')
         self.ax.grid(False)
 
         # Store previous position for trajectory
@@ -71,11 +69,12 @@ class Visualizer(object):
     def display(self, x_m, y_m, theta_deg,
                 start_angle=0,
                 title='',
+                flip_axes=False,
                 map_bytes=None,
                 show_trajectory=False,
                 obstacles=[]):
 
-        self._setPose(x_m, y_m, theta_deg, start_angle, show_trajectory)
+        self._setPose(x_m, y_m, theta_deg, start_angle, show_trajectory, flip_axes)
 
         shift = -self.map_size_pixels / 2 if map_bytes is None else 0
 
@@ -86,9 +85,12 @@ class Visualizer(object):
         if map_bytes is not None:
             self._showMap(map_bytes)
 
-        self._showObstacles(obstacles)
+        self._showObstacles(obstacles, flip_axes)
 
         plt.title(title)
+
+        self.ax.set_xlabel('Y (mm)' if flip_axes else 'X (mm)')
+        self.ax.set_ylabel('X (mm)' if flip_axes else 'Y (mm)')
 
         return self._refresh()
 
@@ -108,7 +110,7 @@ class Visualizer(object):
 
             self.img_artist.set_data(mapimg)
 
-    def _showObstacles(self, obstacles):
+    def _showObstacles(self, obstacles, flip_axes):
 
         if len(obstacles) > 0:
 
@@ -122,18 +124,17 @@ class Visualizer(object):
             pass
 
 
-    def _setPose(self, x_m, y_m, theta_deg, start_angle, showtraj):
-        '''
-        Sets vehicle pose:
-        X:      left/right   (m)
-        Y:      forward/back (m)
-        theta:  rotation (degrees)
-        '''
+    def _setPose(self, x_m, y_m, theta_deg, start_angle, showtraj, flip_axes):
 
         # If zero-angle was indicated, grab first angle to compute rotation
         if start_angle is None and self.zero_angle != 0:
             start_angle = theta_deg
             self.rotate_angle = self.zero_angle - self.start_angle
+
+        # Flip axes if indicated
+        if flip_axes:
+            x_m, y_m = y_m, x_m
+            theta_deg = 90 - theta_deg
 
         # Rotate by computed angle, or zero if no zero-angle indicated
         d = self.rotate_angle
