@@ -91,21 +91,26 @@ class Visualizer(object):
 
         if map_bytes is not None:
 
-            mapimg = np.reshape(np.frombuffer(map_bytes, dtype=np.uint8),
-                                (self.map_size_pixels, self.map_size_pixels))
-
-            # Pause to allow display to refresh
-            plt.pause(.001)
-
-            if self.img_artist is None:
-
-                self.img_artist = self.ax.imshow(mapimg, cmap=colormap.gray)
-
-            else:
-
-                self.img_artist.set_data(mapimg)
+            self._showMap(map_bytes)
 
         return self._refresh()
+
+    def _showMap(self, map_bytes):
+
+        mapimg = np.reshape(np.frombuffer(map_bytes, dtype=np.uint8),
+                            (self.map_size_pixels, self.map_size_pixels))
+
+        # Pause to allow display to refresh
+        plt.pause(.001)
+
+        if self.img_artist is None:
+
+            self.img_artist = self.ax.imshow(mapimg, cmap=colormap.gray)
+
+        else:
+
+            self.img_artist.set_data(mapimg)
+
 
     def _setPose(self, x_m, y_m, theta_deg):
         '''
