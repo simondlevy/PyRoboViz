@@ -35,8 +35,9 @@ class Visualizer(object):
     ROBOT_HEIGHT_M = 0.5
     ROBOT_WIDTH_M = 0.3
 
-    def __init__(self, map_size_pixels, map_size_meters,
-                 obstacles = [],
+    def __init__(self,
+                 map_size_meters,
+                 map_size_pixels=800,
                  title='',
                  show_trajectory=False,
                  zero_angle=0):
@@ -78,7 +79,7 @@ class Visualizer(object):
         self.start_angle = None
         self.rotate_angle = 0
 
-    def display(self, x_m, y_m, theta_deg, map_bytes=None):
+    def display(self, x_m, y_m, theta_deg, map_bytes=None, obstacles=[]):
 
         self._setPose(x_m, y_m, theta_deg)
 

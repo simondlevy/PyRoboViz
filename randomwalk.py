@@ -49,8 +49,7 @@ if __name__ == '__main__':
 
     # Create a Visualizer object with a trajectory, centered at 0,0
 
-    viz = Visualizer(MAP_SIZE_PIXELS, MAP_SIZE_METERS,
-                     title='Random Walk', show_trajectory=True)
+    viz = Visualizer(MAP_SIZE_METERS, title='Random Walk', show_trajectory=True)
 
     # Start in the center of the map with a random heading
     pose = np.array([0,0,360*np.random.random()])
