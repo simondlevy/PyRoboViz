@@ -37,10 +37,9 @@ class Visualizer(object):
 
     def __init__(self, map_size_meters, map_size_pixels=800):
 
-        # Store constants for update
+        # Store constants for display
+        self.map_size_meters = map_size_meters
         self.map_size_pixels = map_size_pixels
-        self.map_scale_meters_per_pixel = (
-                map_size_meters / float(map_size_pixels))
 
         # Create a byte array to display the map with a color overlay
         self.bgrbytes = bytearray(map_size_pixels * map_size_pixels * 3)
@@ -74,7 +73,9 @@ class Visualizer(object):
                 show_trajectory=False,
                 obstacles=[]):
 
-        self._setPose(x_m, y_m, theta_deg, start_angle,
+        # print(x_m, y_m)
+
+        self._set_pose(x_m, y_m, theta_deg, start_angle,
                       show_trajectory, flip_axes)
 
         shift = -self.map_size_pixels / 2 if map_bytes is None else 0
@@ -86,7 +87,7 @@ class Visualizer(object):
         if map_bytes is not None:
             self._showMap(map_bytes)
 
-        self._showObstacles(obstacles, flip_axes)
+        self._show_obstacles(obstacles, flip_axes)
 
         plt.title(title)
 
@@ -100,9 +101,6 @@ class Visualizer(object):
         mapimg = np.reshape(np.frombuffer(map_bytes, dtype=np.uint8),
                             (self.map_size_pixels, self.map_size_pixels))
 
-        # Pause to allow display to refresh
-        plt.pause(.001)
-
         if self.img_artist is None:
 
             self.img_artist = self.ax.imshow(mapimg, cmap=colormap.gray)
@@ -111,16 +109,15 @@ class Visualizer(object):
 
             self.img_artist.set_data(mapimg)
 
-    def _showObstacles(self, obstacles, flip_axes):
+    def _show_obstacles(self, obstacles, flip_axes):
 
-        for obstacle in obstacles:
+        for obst in obstacles:
+            xs = [x * 100 for x in obst['x']] # (0, 100, 100, 0, 0)
+            ys = [y * 100 for y in obst['y']] # (0, 0, 100, 100, 0)
+            plt.fill(xs, ys, color='black')
 
-            m_to_mm = lambda ms : list(map(lambda m : m * 1000, ms))
 
-            plt.fill(m_to_mm(obstacle['x']), m_to_mm(obstacle['y']),
-                     color='black')
-
-    def _setPose(self, x_m, y_m, theta_deg, start_angle, showtraj, flip_axes):
+    def _set_pose(self, x_m, y_m, theta_deg, start_angle, showtraj, flip_axes):
 
         # If zero-angle was indicated, grab first angle to compute rotation
         if start_angle is None and self.zero_angle != 0:
@@ -151,7 +148,7 @@ class Visualizer(object):
         dx = L * c
         dy = L * s
 
-        s = self.map_scale_meters_per_pixel
+        s = self.map_size_meters / self.map_size_pixels
 
         self.vehicle = self.ax.arrow(x_m/s, y_m/s, dx, dy,
                                      head_width=Visualizer.ROBOT_WIDTH_M/s,
@@ -159,7 +156,6 @@ class Visualizer(object):
                                      fc='r', ec='r')
 
         # Show trajectory if indicated
-        s = self.map_scale_meters_per_pixel
         currpos = x_m/s, y_m/s
         if showtraj and self.prevpos is not None:
             self.ax.add_line(mlines.Line2D((self.prevpos[0], currpos[0]),
