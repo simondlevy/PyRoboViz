@@ -114,6 +114,13 @@ class Visualizer(object):
 
     def _showObstacles(self, obstacles):
 
+        if obstacles is not None:
+
+            x_coords = [40, 10, 00, 2]
+            y_coords = [10, 20, 00, 1]
+
+            plt.fill(x_coords, y_coords, color='black', alpha=0.5)
+
         for obstacle in obstacles:
 
             pass
