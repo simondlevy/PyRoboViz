@@ -113,16 +113,9 @@ class Visualizer(object):
 
     def _showObstacles(self, obstacles, flip_axes):
 
-        if len(obstacles) > 0:
-
-            x_coords = 0, 100, 100, 0,   0
-            y_coords = 0,   0, 100, 100, 0
-
-            plt.fill(x_coords, y_coords, color='black', alpha=0.5)
-
         for obstacle in obstacles:
 
-            pass
+            plt.fill(obstacle['x'], obstacle['y'], color='black')
 
     def _setPose(self, x_m, y_m, theta_deg, start_angle, showtraj, flip_axes):
 
