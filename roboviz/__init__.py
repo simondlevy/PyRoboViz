@@ -74,7 +74,8 @@ class Visualizer(object):
                 show_trajectory=False,
                 obstacles=[]):
 
-        self._setPose(x_m, y_m, theta_deg, start_angle, show_trajectory, flip_axes)
+        self._setPose(x_m, y_m, theta_deg, start_angle,
+                      show_trajectory, flip_axes)
 
         shift = -self.map_size_pixels / 2 if map_bytes is None else 0
 
@@ -122,7 +123,6 @@ class Visualizer(object):
         for obstacle in obstacles:
 
             pass
-
 
     def _setPose(self, x_m, y_m, theta_deg, start_angle, showtraj, flip_axes):
 
