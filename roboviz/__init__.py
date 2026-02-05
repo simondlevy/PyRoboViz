@@ -115,8 +115,8 @@ class Visualizer(object):
 
         if len(obstacles) > 0:
 
-            x_coords = [40, 10, 00, 2]
-            y_coords = [10, 20, 00, 1]
+            x_coords = 0, 100, 100, 0,   0
+            y_coords = 0,   0, 100, 100, 0
 
             plt.fill(x_coords, y_coords, color='black', alpha=0.5)
 
