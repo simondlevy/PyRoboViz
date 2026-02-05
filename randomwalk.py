@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     # Create a Visualizer object with a trajectory, centered at 0,0
 
-    viz = Visualizer(MAP_SIZE_METERS, title='Random Walk', show_trajectory=True)
+    viz = Visualizer(MAP_SIZE_METERS)
 
     # Start in the center of the map with a random heading
     pose = np.array([0,0,360*np.random.random()])
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     while True:
 
         # Set current pose in visualizer the display, exiting gracefully if user closes it
-        if not viz.display(*pose):
+        if not viz.display(*pose, title='Random Walk', show_trajectory=True):
             exit(0)
 
         # Rotate randomly and move forward

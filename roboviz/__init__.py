@@ -35,12 +35,7 @@ class Visualizer(object):
     ROBOT_HEIGHT_M = 0.5
     ROBOT_WIDTH_M = 0.3
 
-    def __init__(self,
-                 map_size_meters,
-                 map_size_pixels=800,
-                 title='',
-                 show_trajectory=False,
-                 zero_angle=0):
+    def __init__(self, map_size_meters, map_size_pixels=800):
 
         # Store constants for update
         self.map_size_pixels = map_size_pixels
@@ -56,9 +51,6 @@ class Visualizer(object):
         # Store Python ID of figure to detect window close
         self.figid = id(fig)
 
-        # fig.canvas.set_window_title('SLAM')
-        plt.title(title)
-
         # Use an "artist" to speed up map drawing
         self.img_artist = None
 
@@ -73,15 +65,17 @@ class Visualizer(object):
 
         # Store previous position for trajectory
         self.prevpos = None
-        self.showtraj = show_trajectory
 
-        self.zero_angle = zero_angle
-        self.start_angle = None
         self.rotate_angle = 0
 
-    def display(self, x_m, y_m, theta_deg, map_bytes=None, obstacles=[]):
+    def display(self, x_m, y_m, theta_deg,
+                start_angle=0,
+                title='',
+                map_bytes=None,
+                show_trajectory=False,
+                obstacles=[]):
 
-        self._setPose(x_m, y_m, theta_deg)
+        self._setPose(x_m, y_m, theta_deg, start_angle, show_trajectory)
 
         shift = -self.map_size_pixels / 2 if map_bytes is None else 0
 
@@ -93,6 +87,8 @@ class Visualizer(object):
             self._showMap(map_bytes)
 
         self._showObstacles(obstacles)
+
+        plt.title(title)
 
         return self._refresh()
 
@@ -114,7 +110,7 @@ class Visualizer(object):
 
     def _showObstacles(self, obstacles):
 
-        if obstacles is not None:
+        if len(obstacles) > 0:
 
             x_coords = [40, 10, 00, 2]
             y_coords = [10, 20, 00, 1]
@@ -126,7 +122,7 @@ class Visualizer(object):
             pass
 
 
-    def _setPose(self, x_m, y_m, theta_deg):
+    def _setPose(self, x_m, y_m, theta_deg, start_angle, showtraj):
         '''
         Sets vehicle pose:
         X:      left/right   (m)
@@ -135,8 +131,8 @@ class Visualizer(object):
         '''
 
         # If zero-angle was indicated, grab first angle to compute rotation
-        if self.start_angle is None and self.zero_angle != 0:
-            self.start_angle = theta_deg
+        if start_angle is None and self.zero_angle != 0:
+            start_angle = theta_deg
             self.rotate_angle = self.zero_angle - self.start_angle
 
         # Rotate by computed angle, or zero if no zero-angle indicated
@@ -168,7 +164,7 @@ class Visualizer(object):
         # Show trajectory if indicated
         s = self.map_scale_meters_per_pixel
         currpos = x_m/s, y_m/s
-        if self.showtraj and self.prevpos is not None:
+        if showtraj and self.prevpos is not None:
             self.ax.add_line(mlines.Line2D((self.prevpos[0], currpos[0]),
                              (self.prevpos[1], currpos[1])))
         self.prevpos = currpos
